@@ -37,3 +37,12 @@ When a pending decision is resolved, move it out of this file and into an ADR.
 **Status:** Future design concern.
 **Decision needed:** Where to use consumer-driven contract testing (Pact) versus full integration/E2E. Contract tests catch a different bug class (API shape drift breaking a consumer) far more cheaply and with less flake than full E2E, and should be the preferred way to verify service boundaries.
 **Why it matters:** Refines the framework's opinion about what to test where — part of test-pyramid discipline. Resolve as the API-testing layers mature.
+ 
+ ## P-07: Runner and driver swappability -- extent, timing, and the framework's structural commitment
+ **Status:** Future design concern
+ **Decision needed:** Three layers stay strictly tooling-agnostic: result schema (Crucible.Core), reporters (Crucible.Reporting), and Page Objects / domain operations (Crucible.PageObjects). Two layers are tooling-specific by design and isolated as adapters: runner adapters (Crucible.Driver.Playwright, Crucible.Driver.Selenium). Test methods have exactly one tooling-coupled element: the discovery attribute (`[Fact], [Test]`). Test bodies call into Page Objects and assertions that themselves are tooling-agnostic. 
+ **Architecture:**  Design `Crucible-core` to be strictly runner agnostic from the start (no `using xUnit` or xUnit types leak into Core source). Build the first runner adapter (`Crucible.Runner.Xunit`) as a separate project when result-collection lifecycle hooks become necessary. Defer formalizing an `ITestResultCollector` interface until a second concrete adapter (TUnit, MSTest, NUnit) is implemented and the interface can be designed from observed commonality rather than speculation. The Hexagonal/Ports-andAdapters patter (Cockburn 2005; same architecture as EF Core's provider model) is the target shape.
+ **Value proposition:** institutional test logic investment is preserved across tool churn.
+ **Trade off:** BDD frameworks (Reqnroll) bind step definitions to feature files in a framework-specific way, making them more tightly coupled than plain attribute-driven tests -- to be addressed in P-02.
+ **Cost:** one extra project per supported runner, modest interface-design discipline at the seam.
+ **Benefit:** framework outlives runner churn, demonstrates architectural maturity for portfolio evaluation.
