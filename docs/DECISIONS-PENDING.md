@@ -46,3 +46,9 @@ When a pending decision is resolved, move it out of this file and into an ADR.
  **Trade off:** BDD frameworks (Reqnroll) bind step definitions to feature files in a framework-specific way, making them more tightly coupled than plain attribute-driven tests -- to be addressed in P-02.
  **Cost:** one extra project per supported runner, modest interface-design discipline at the seam.
  **Benefit:** framework outlives runner churn, demonstrates architectural maturity for portfolio evaluation.
+
+## P-08: HTTP-client seam for Crucible.Api — to become ADR 0006
+**Status:** Gated. Must be decided before the second Crucible.Api test lands.
+**Decision needed:** How `HttpClient` is constructed and reused per test (`IHttpClientFactory` + DI vs per-test `new HttpClient()` vs xUnit fixture-scoped client), and where the base URL is sourced (env var, `IConfiguration`, fixture parameter, test constant). Slice 1's single test hardcodes the URL inline; that one-liner is the deliberate placeholder this decision replaces.
+**Why deferred:** Slice 1 is one test against a stateless hardcoded GET — no seam pressure yet, and a premature abstraction here would shape itself by speculation rather than observed need.
+**Why it matters:** Intersects ADR 0005. `HttpClient` is shared *expensive* infrastructure (sockets, DNS, handler pooling) — its state must be either immutable across tests or rebuilt per test, or the framework reintroduces the exact shared-mutable-state risk 0005 designs out. The seam is also load-bearing for downstream concerns: auth-token caching, correlation-ID propagation (`DelegatingHandler`), retry/Polly policies, and per-environment URL injection.

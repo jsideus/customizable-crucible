@@ -1,8 +1,11 @@
 namespace Crucible.ParallelCore.Tests;
 
-/* Total runtime should be under ~700ms; if it climbs back
-* toward 1.5s, parallelism has regressed"
-*/
+//<summary>
+/// Parallelism regression probe. Total run time should be under ~700ms;
+/// if it climbs back toward ~1.5s, intra-collection parallelism has regressed.
+/// Each probe lives in its own class because xUnit parallelizes by collection
+/// (one class = one collection), not within a class.
+//</summary>
 
 public class ParallelProbeATest
 {
@@ -41,7 +44,7 @@ public class ParallelProbeCTest
     public ParallelProbeCTest(ITestOutputHelper output) => _output = output;
 
     [Fact]
-    public async Task Probe_C()
+    public async Task Probe()
     {
         var start = DateTimeOffset.UtcNow;
         _output.WriteLine($"Probe_C START thread={Environment.CurrentManagedThreadId} at {start:HH:mm:ss.fff}");
