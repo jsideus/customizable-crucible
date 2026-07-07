@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      
+      - name: Restore
+        run: dotnet Restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Debug
+
+      - name: Install Playwright browsers
+        run: pwsh tests/Crucible.UI.Tests/bin/Debug/net10.0/playwright.ps1 install --with-deps chromium
+
+      - name: Test
+        run: dotnet test --no-build --configuration Debug
+        env:
+          QaCloud__ApiToken: ${{ secrets.QACLOUD_API_TOKEN }}
