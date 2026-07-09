@@ -1,6 +1,10 @@
 <Solution>
   <Project Path="tests/Crucible.UI.Tests/Crucible.UI.Tests.csproj" />
   <Project Path="tests/Crucible.ParallelCore.Tests/Crucible.ParallelCore.Tests.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/Crucible.Api.Client/Crucible.Api.Client.csproj" />
+    <Project Path="src/Crucible.Configuration/Crucible.Configuration.csproj" />
+  </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Crucible.Api.Tests/Crucible.Api.Tests.csproj" />
   </Folder>
